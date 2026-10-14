@@ -1,0 +1,836 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#123b70">
+<title>Sistem Rem pada Kendaraan Ringan</title>
+<style>
+:root {
+  --navy: #123b70;
+  --blue: #1769aa;
+  --sky: #dceeff;
+  --cyan: #70d5e8;
+  --paper: #f2f1ed;
+  --ink: #172638;
+  --muted: #607184;
+  --line: #d9e2eb;
+  --white: #fff;
+  --green: #147d54;
+  --red: #b52b37;
+  --amber: #946200;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font: 15px/1.4 system-ui, -apple-system, "Segoe UI", sans-serif;
+  width: 100vw;
+  height: 100vh;
+  position: absolute;
+  overflow: hidden;
+}
+button, input, textarea { font: inherit; }
+button {
+  min-height: 42px;
+  border: 0;
+  border-radius: 10px;
+  padding: 10px 16px;
+  background: var(--blue);
+  color: #fff;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+button.secondary { background: #e8f1fa; color: var(--navy); border: 1px solid #b9d2e9; }
+button.ghost { background: transparent; color: var(--navy); border: 1px solid var(--line); }
+button:disabled { opacity: .45; cursor: not-allowed; }
+button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visible { outline: 3px solid #f2b544; outline-offset: 2px; }
+
+.app {
+  width: 1920px;
+  height: 1080px;
+  max-width: 100%;
+  max-height: 100%;
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  background: var(--paper);
+  position: absolute;
+  top: 0;
+  left: 0;
+  overflow: hidden;
+}
+
+.side {
+  background: var(--navy);
+  color: white;
+  padding: 20px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  height: 100%;
+  overflow-y: auto;
+}
+
+.brand {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  padding: 2px 4px 12px;
+  border-bottom: 1px solid #ffffff35;
+}
+
+.brandmark {
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  background: #d9f4ff;
+  color: var(--navy);
+  border-radius: 12px;
+  font-size: 22px;
+}
+
+.brand small { display: block; color: #b9d7f3; font-size: 11px; }
+
+.nav { display: grid; gap: 4px; }
+.nav button {
+  background: transparent;
+  color: #eaf5ff;
+  text-align: left;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid transparent;
+  padding: 8px 12px;
+  min-height: 38px;
+  border-radius: 8px;
+  font-size: 13px;
+}
+.nav button.active, .nav button:hover { background: #ffffff18; border-color: #ffffff40; }
+.nav .num {
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  background: #ffffff20;
+  font-size: 11px;
+}
+
+.sidefoot { margin-top: auto; color: #c1d7eb; font-size: 12px; line-height: 1.3; }
+
+.main {
+  min-width: 0;
+  padding: 20px 32px;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 12px;
+  flex-shrink: 0;
+}
+
+.eyebrow {
+  font-size: 11px;
+  letter-spacing: .12em;
+  font-weight: 800;
+  color: var(--blue);
+  text-transform: uppercase;
+}
+
+.progress-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.progress {
+  height: 6px;
+  width: 120px;
+  background: #d9e2eb;
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+.progress span { display: block; height: 100%; width: 10%; background: var(--cyan); transition: width .2s; }
+
+.content-viewport {
+  flex-grow: 1;
+  position: relative;
+  overflow: hidden;
+}
+
+.screen {
+  display: none;
+  height: 100%;
+  flex-direction: column;
+  animation: appear .15s ease;
+}
+.screen.active { display: flex; }
+@keyframes appear { from { opacity: .4; transform: translateY(3px); } to { opacity: 1; transform: none; } }
+
+h1, h2, h3, p { margin-top: 0; }
+h1 { font-size: 34px; line-height: 1.1; letter-spacing: -.03em; margin-bottom: 10px; }
+h2 { font-size: 26px; letter-spacing: -.02em; margin-bottom: 6px; }
+h3 { font-size: 17px; margin-bottom: 6px; }
+.muted { color: var(--muted); }
+.lead { font-size: 16px; max-width: 800px; color: #43566a; margin-bottom: 12px; }
+
+.panel {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 18px 22px;
+  box-shadow: 0 4px 16px #153f6c08;
+  margin-bottom: 12px;
+  flex-shrink: 0;
+}
+
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+
+.callout {
+  border-left: 4px solid var(--cyan);
+  background: #edf8ff;
+  padding: 10px 14px;
+  border-radius: 0 10px 10px 0;
+  margin-top: 8px;
+  font-size: 14px;
+}
+.callout.warn { border-color: #e8b34b; background: #fff8e7; }
+
+.objective { display: flex; gap: 10px; margin: 8px 0; align-items: flex-start; font-size: 14px; }
+.checkicon {
+  flex: 0 0 22px;
+  height: 22px;
+  border-radius: 6px;
+  background: #e1f5ed;
+  color: var(--green);
+  display: grid;
+  place-items: center;
+  font-weight: 900;
+  font-size: 12px;
+}
+
+.diagram { background: #f7fbff; border: 1px solid #cddfed; border-radius: 12px; padding: 10px; text-align: center; }
+.diagram svg { max-width: 100%; height: auto; max-height: 180px; }
+
+.controls { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+.status { padding: 10px 14px; border-radius: 10px; background: #f1f5f8; font-size: 14px; }
+.status.good { background: #e3f6ed; color: #145a40; }
+.status.bad { background: #fff0ef; color: #8e2028; }
+
+.choice-list { display: grid; gap: 6px; margin: 8px 0; }
+.choice {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 8px 12px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  cursor: pointer;
+  background: #fff;
+  font-size: 13px;
+}
+.choice:has(input:checked) { border-color: var(--blue); background: #edf6ff; }
+.choice input { margin-top: 2px; width: 16px; height: 16px; accent-color: var(--blue); }
+
+.sim-layout { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 16px; }
+
+.quiz-container-box { max-height: 380px; overflow-y: auto; padding-right: 6px; }
+.quiz-question { border: 1px solid var(--line); border-radius: 12px; padding: 12px; margin-bottom: 10px; background: white; }
+.quiz-question legend { font-weight: 750; padding: 0 4px; font-size: 14px; }
+.qnum { color: var(--blue); font-size: 11px; letter-spacing: .08em; font-weight: 800; }
+.feedback { font-size: 13px; margin-top: 6px; color: var(--muted); }
+
+textarea { width: 100%; min-height: 50px; border: 1px solid #c8d5e1; border-radius: 10px; padding: 8px; resize: none; background: #fff; color: var(--ink); font-size: 13px; }
+input[type=text] { width: 100%; min-height: 38px; border: 1px solid #c8d5e1; border-radius: 10px; padding: 6px 10px; font-size: 13px; }
+
+.checkline { display: flex; gap: 8px; align-items: flex-start; padding: 6px 0; border-bottom: 1px solid var(--line); font-size: 13px; }
+.checkline input { width: 16px; height: 16px; margin-top: 2px; accent-color: var(--blue); }
+
+.bottomnav {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: auto;
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+  flex-shrink: 0;
+}
+.bottomnav .right { display: flex; gap: 8px; }
+.small { font-size: 12px; }
+.metadata { display: grid; grid-template-columns: 160px 1fr; gap: 6px 14px; font-size: 14px; }
+.metadata dt { color: var(--muted); }
+.metadata dd { margin: 0; font-weight: 650; }
+
+.tab-buttons { display: flex; gap: 6px; margin-bottom: 10px; }
+.tab-btn { background: #e8f1fa; color: var(--navy); border: 1px solid #b9d2e9; padding: 6px 12px; min-height: auto; border-radius: 6px; font-weight: 700; font-size: 13px; }
+.tab-btn.active { background: var(--blue); color: #fff; border-color: var(--blue); }
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="side">
+    <div class="brand">
+      <div class="brandmark" aria-hidden="true">🚗</div>
+      <div><strong>REMSYS LAB</strong><small>Sistem Rem Kendaraan</small></div>
+    </div>
+    <nav class="nav" aria-label="Navigasi pembelajaran">
+      <button class="active" data-go="0"><span class="num">1</span> Beranda & Identitas</button>
+      <button data-go="1"><span class="num">2</span> Hook & Tujuan</button>
+      <button data-go="2"><span class="num">3</span> Panduan Belajar</button>
+      <button data-go="3"><span class="num">4</span> Konsep Nyata</button>
+      <button data-go="4"><span class="num">5</span> Dasar & Rumus</button>
+      <button data-go="5"><span class="num">6</span> Simulasi Grafik</button>
+      <button data-go="6"><span class="num">7</span> Integrasi Topik</button>
+      <button data-go="7"><span class="num">8</span> Contoh Soal TKA</button>
+      <button data-go="8"><span class="num">9</span> Checklist & Refleksi</button>
+      <button data-go="9"><span class="num">10</span> Profil & Referensi</button>
+    </nav>
+    <div class="sidefoot">Mohamad Beni<br>SMK Taruna Karya</div>
+  </aside>
+
+  <main class="main">
+    <div class="topbar">
+      <div>
+        <div class="eyebrow">Sistem Rem pada Kendaraan Ringan · Fase F</div>
+        <div class="muted small">Modul Pembelajaran Interaktif Berbasis Pembelajaran Mendalam</div>
+      </div>
+      <div class="progress-wrap">
+        <span id="progressText">Halaman 1 dari 10</span>
+        <div class="progress" aria-label="Kemajuan belajar"><span id="progressBar"></span></div>
+        <button class="secondary" id="fullscreenBtn" title="Layar Penuh" style="padding:4px 10px; min-height:auto;">⛶</button>
+      </div>
+    </div>
+
+    <div class="content-viewport">
+      <!-- 1. Beranda & Identitas -->
+      <section class="screen active" id="s0">
+        <div class="panel" style="margin-bottom:0;">
+          <div class="eyebrow">Modul Interaktif Otomotif</div>
+          <h1>Sistem Rem pada Kendaraan Ringan</h1>
+          <p class="lead">Platform pembelajaran mandalam untuk menguasai prinsip hidrolik, gaya pengereman, kalkulasi teknis, dan integrasi sistem keamanan kendaraan secara interaktif.</p>
+          <div class="grid2" style="margin-top:14px;">
+            <div>
+              <h3>Identitas Pembelajaran</h3>
+              <dl class="metadata" style="margin-top:8px;">
+                <dt>Judul Topik</dt>
+                <dd>Sistem Rem pada Kendaraan Ringan</dd>
+                <dt>Fase / Kelas</dt>
+                <dd>Fase F (Kelas XI - XII SMK)</dd>
+                <dt>Nama Pengembang</dt>
+                <dd>Mohamad Beni</dd>
+                <dt>Asal Sekolah</dt>
+                <dd>SMK Taruna Karya</dd>
+              </dl>
+            </div>
+            <div style="display:flex; flex-direction:column; justify-content:center; align-items:center; background:linear-gradient(135deg, #e0f4ff, #f9fcff); border:1px solid #c6e3f3; border-radius:14px; padding:12px;">
+              <svg viewBox="0 0 320 120" role="img" aria-label="Ilustrasi Rem" style="max-height:90px; width:auto;">
+                <circle cx="160" cy="60" r="45" fill="#e0f4ff" stroke="#1769aa" stroke-width="4"/>
+                <rect x="140" y="35" width="40" height="50" rx="6" fill="#123b70"/>
+                <text x="160" y="65" font-size="12" fill="#fff" font-weight="bold" text-anchor="middle">DISC</text>
+              </svg>
+              <div class="controls" style="margin-top:8px;">
+                <button data-next>Mulai Eksplorasi Sekarang →</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 2. Hook & Tujuan -->
+      <section class="screen" id="s1">
+        <div class="panel">
+          <div class="eyebrow">02 · Kontekstualisasi & Tujuan</div>
+          <h2>Hook & Ruang Lingkup Materi Pembelajaran</h2>
+          <div class="grid2" style="margin-top:10px;">
+            <div>
+              <h3>Mengapa Belajar Topik Ini?</h3>
+              <p style="font-size:14px; line-height:1.4;">Bayangkan sebuah kendaraan melaju kencang di jalan tol mendadak menemui kondisi darurat. Dalam hitungan sepersekian detik, pengemudi menginjak pedal rem. Gaya kaki yang ringan dilipatgandakan melalui hukum fluida tertutup, mengubah energi kinetik raksasa menjadi energi panas gesekan secara instan tanpa membuat kendaraan terpelintir.</p>
+              <div class="callout warn" style="margin-top:6px;">
+                <strong>Keselamatan Mutlak:</strong> Kegagalan rem berakibat fatal. Penguasaan perhitungan hidrolik dan analisis gaya adalah kompetensi mutlak teknisi profesional.
+              </div>
+            </div>
+            <div>
+              <h3>Apa Saja yang Akan Dipelajari?</h3>
+              <div class="objective"><span class="checkicon">✓</span><div><strong>Prinsip Hidrolik Pascal:</strong> Tekanan fluida dan rasio luas penampang piston master terhadap silinder roda.</div></div>
+              <div class="objective"><span class="checkicon">✓</span><div><strong>Konstruksi Komponen:</strong> Analisis rem cakram (disc brake) dan rem tromol (drum brake) beserta mekanisme geseknya.</div></div>
+              <div class="objective"><span class="checkicon">✓</span><div><strong>Analisis Kinetika & Jarak Henti:</strong> Perhitungan torsi pengereman, perlambatan, dan jarak henti kendaraan.</div></div>
+              <div class="objective"><span class="checkicon">✓</span><div><strong>Sistem Pengaman Modern:</strong> Integrasi ABS, EBD, serta disipasi panas termodinamika.</div></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 3. Panduan Belajar -->
+      <section class="screen" id="s2">
+        <div class="panel">
+          <div class="eyebrow">03 · Metodologi Pembelajaran</div>
+          <h2>Panduan Menggunakan Bahan Ajar Ini</h2>
+          <p class="lead" style="margin-bottom:8px;">Bahan ajar ini mengacu pada pendekatan Pembelajaran Mendalam (Deep Learning) agar konsep mekanika otomotif mudah dikuasai.</p>
+          <div class="grid3" style="margin-top:8px;">
+            <div class="panel" style="margin-bottom:0; background:#fbfdff;">
+              <b style="color:var(--navy);">1. Makna & Konteks</b>
+              <p class="small muted" style="margin-top:4px;">Mulai dengan memahami apa yang dipelajari serta kegunaannya secara nyata dalam keselamatan berkendara harian.</p>
+            </div>
+            <div class="panel" style="margin-bottom:0; background:#fbfdff;">
+              <b style="color:var(--navy);">2. Rumus & Situasi Nyata</b>
+              <p class="small muted" style="margin-top:4px;">Memahami asal-usul rumus ilmiah matematis dan mengaplikasikannya dalam berbagai situasi kondisi operasional.</p>
+            </div>
+            <div class="panel" style="margin-bottom:0; background:#fbfdff;">
+              <b style="color:var(--navy);">3. Simulasi & Integrasi</b>
+              <p class="small muted" style="margin-top:4px;">Menggunakan simulasi grafik, soal kompleks, checklist, dan refleksi mandiri untuk mengukur kompetensi penguasaan.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 4. Konsep Nyata -->
+      <section class="screen" id="s3">
+        <div class="panel">
+          <div class="eyebrow">04 · Implementasi Nyata</div>
+          <h2>Konsep Implementasi Sistem Rem di Dunia Nyata</h2>
+          <div class="grid2" style="margin-top:10px;">
+            <div>
+              <h3>Ilustrasi Alur Tekanan Hidrolik</h3>
+              <p style="font-size:14px;">Gaya tekan kaki pada pedal menggerakkan piston master silinder primer, membangkitkan tekanan hidrolik minyak rem yang disalurkan serentak ke kaliper roda depan dan silinder roda belakang.</p>
+              <div class="diagram" style="margin-top:8px; padding:6px;">
+                <svg viewBox="0 0 400 130" role="img" aria-label="Diagram Alur Rem Hidrolik">
+                  <rect x="20" y="45" width="70" height="35" rx="6" fill="#e8f1fa" stroke="#1769aa" stroke-width="2"/>
+                  <text x="55" y="67" font-size="11" fill="#123b70" font-weight="bold" text-anchor="middle">Pedal</text>
+                  <path d="M90 62 L140 62" stroke="#1769aa" stroke-width="3"/>
+                  <rect x="140" y="35" width="100" height="55" rx="8" fill="#dceeff" stroke="#1769aa" stroke-width="2"/>
+                  <text x="190" y="67" font-size="11" fill="#123b70" font-weight="bold" text-anchor="middle">Master Silinder</text>
+                  <path d="M240 62 L290 35 M240 62 L290 90" stroke="#b52b37" stroke-width="2.5"/>
+                  <rect x="290" y="15" width="90" height="35" rx="6" fill="#e3f6ed" stroke="#147d54" stroke-width="2"/>
+                  <text x="335" y="37" font-size="10" fill="#145a40" font-weight="bold" text-anchor="middle">Kaliper Depan</text>
+                  <rect x="290" y="75" width="90" height="35" rx="6" fill="#fff8e7" stroke="#946200" stroke-width="2"/>
+                  <text x="335" y="97" font-size="10" fill="#946200" font-weight="bold" text-anchor="middle">Silinder Belakang</text>
+                </svg>
+              </div>
+            </div>
+            <div>
+              <h3>Karakteristik Rem Kendaraan Ringan</h3>
+              <ul style="margin:0 0 10px 18px; font-size:14px; line-height:1.5;">
+                <li><strong>Rem Cakram Depan:</strong> Menanggung beban pengereman terbesar karena transfer bobot (weight transfer) saat kendaraan mendeselerasi.</li>
+                <li><strong>Rem Tromol Belakang:</strong> Memiliki daya cengkeram mandiri (self-energizing) yang efisien untuk rem parkir.</li>
+                <li><strong>Brake Booster:</strong> Memanfaatkan kevakuman mesin untuk melipatgandakan gaya tekan pengemudi secara pneumatik.</li>
+              </ul>
+              <div class="callout">
+                <strong>Standar Cairan:</strong> Minyak rem berstandar DOT 3 / DOT 4 wajib tahan suhu tinggi agar terhindar dari penguapan (vapor lock).
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 5. Dasar & Asal Rumus -->
+      <section class="screen" id="s4">
+        <div class="panel">
+          <div class="eyebrow">05 · Teori & Kalkulasi</div>
+          <h2>Konsep Dasar & Asal Usul Rumus Pengereman</h2>
+          <div class="grid2" style="margin-top:10px;">
+            <div class="panel" style="margin-bottom:0; background:#fbfdff;">
+              <h3>1. Hukum Pascal (Sistem Hidrolik)</h3>
+              <p style="font-size:13px;">Tekanan fluida dalam ruang tertutup diteruskan merata ke segala arah: $P_1 = P_2$</p>
+              <div style="background:#edf6ff; padding:8px; border-radius:8px; text-align:center; font-weight:700; color:var(--navy); font-size:14px; margin:6px 0;">
+                $\frac{F_1}{A_1} = \frac{F_2}{A_2} \implies F_2 = F_1 \times \left(\frac{A_2}{A_1}\right)$
+              </div>
+              <p class="small muted">Gaya keluaran piston kaliper ($F_2$) dilipatgandakan sebesar rasio luas penampang piston ($A_2 / A_1$).</p>
+            </div>
+            <div class="panel" style="margin-bottom:0; background:#fbfdff;">
+              <h3>2. Torsi & Perlambatan Kendaraan</h3>
+              <p style="font-size:13px;">Torsi pengereman ($T_b$) dan perlambatan kendaraan ($a$) dirumuskan sebagai berikut:</p>
+              <div style="background:#edf6ff; padding:8px; border-radius:8px; text-align:center; font-weight:700; color:var(--navy); font-size:14px; margin:6px 0;">
+                $T_b = \mu \cdot N \cdot R_{eff} \cdot n \quad;\quad a = \frac{T_b}{r_{dyn} \cdot m}$
+              </div>
+              <p class="small muted">$\mu$ = koefisien gesek kampas, $N$ = gaya jepit, $R_{eff}$ = jari-jari efektif, $m$ = massa total kendaraan.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 6. Simulasi Grafik -->
+      <section class="screen" id="s5">
+        <div class="panel">
+          <div class="eyebrow">06 · Simulasi Interaktif</div>
+          <h2>Simulasi Interaktif Tekanan & Jarak Pengereman</h2>
+          <div class="sim-layout" style="margin-top:8px;">
+            <div>
+              <div style="display:grid; gap:8px; font-size:13px;">
+                <div>
+                  <label><strong>Gaya Pedal ($F_1$):</strong> <span id="valF1">150</span> N</label>
+                  <input type="range" id="rangeF1" min="50" max="400" value="150" step="10" style="width:100%; accent-color:var(--blue);">
+                </div>
+                <div>
+                  <label><strong>Rasio Piston ($A_2 / A_1$):</strong> <span id="valRatio">4.0</span>x</label>
+                  <input type="range" id="rangeRatio" min="2.0" max="8.0" value="4.0" step="0.5" style="width:100%; accent-color:var(--blue);">
+                </div>
+                <div>
+                  <label><strong>Kecepatan Awal ($v_0$):</strong> <span id="valV">60</span> km/jam</label>
+                  <input type="range" id="rangeV" min="20" max="120" value="60" step="5" style="width:100%; accent-color:var(--blue);">
+                </div>
+              </div>
+              <div class="controls">
+                <button id="runSimBtn">▶ Jalankan Simulasi</button>
+                <button id="resetSimBtn" class="secondary">↺ Reset</button>
+              </div>
+            </div>
+            <div style="background:#f7fbff; border:1px solid #cddfed; border-radius:12px; padding:12px;">
+              <h3 style="margin-bottom:6px; font-size:14px;">Hasil Perhitungan Otomatis</h3>
+              <div style="display:grid; gap:6px; font-size:13px;">
+                <div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--line); padding-bottom:4px;">
+                  <span>Tekanan Hidrolik ($P$)</span><strong id="resP" style="color:var(--blue);">--</strong>
+                </div>
+                <div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--line); padding-bottom:4px;">
+                  <span>Gaya Jepit Kaliper ($F_2$)</span><strong id="resF2" style="color:var(--green);">--</strong>
+                </div>
+                <div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--line); padding-bottom:4px;">
+                  <span>Perlambatan ($a$)</span><strong id="resAccel" style="color:var(--navy);">--</strong>
+                </div>
+                <div style="display:flex; justify-content:space-between;">
+                  <span>Estimasi Jarak Henti ($d$)</span><strong id="resDist" style="color:#b52b37;">--</strong>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 7. Integrasi Beberapa Topik -->
+      <section class="screen" id="s6">
+        <div class="panel">
+          <div class="eyebrow">07 · Integrasi Lanjutan</div>
+          <h2>Integrasi Tiga Subhalaman Soal Kompleks</h2>
+          <div class="tab-buttons">
+            <button class="tab-btn active" data-tab="int1">1. Termodinamika & Disipasi Panas</button>
+            <button class="tab-btn" data-tab="int2">2. Elektronik & Sensor ABS</button>
+            <button class="tab-btn" data-tab="int3">3. Dinamika & Proportioning Valve</button>
+          </div>
+          <div class="tab-content active" id="int1">
+            <h3 style="font-size:15px;">Kasus 1: Konversi Energi Kinetik Menjadi Kalor</h3>
+            <p style="font-size:13px;">Kendaraan 1200 kg melaju 80 km/jam dihentikan total dalam 4 detik. Hitung energi kinetik awal dan bagaimana piringan berventilasi mencegah <em>brake fade</em>.</p>
+            <button class="secondary" style="font-size:12px; padding:6px 12px;" onclick="alert('Pembahasan: Ek = 0.5 * m * v^2 = 0.5 * 1200 * (80/3.6)^2. Energi dikonversi menjadi panas Q. Piringan berventilasi mempercepat pendinginan secara konveksi udara.')">Lihat Pembahasan Lengkap</button>
+          </div>
+          <div class="tab-content" id="int2">
+            <h3>Kasus 2: Modulasi Pulsa Katup Solenoid ABS</h3>
+            <p style="font-size:13px;">Ketika roda terdeteksi slip oleh wheel speed sensor, bagaimana ECU mengatur tekanan hidrolik melalui siklus release, hold, dan apply?</p>
+            <button class="secondary" style="font-size:12px; padding:6px 12px;" onclick="alert('Pembahasan: ECU memerintahkan solenoid valve menurunkan tekanan sesaat agar roda kembali berputar, lalu menahan dan menaikkan kembali tekanan dengan frekuensi 15-20 Hz.')">Lihat Pembahasan Lengkap</button>
+          </div>
+          <div class="tab-content" id="int3">
+            <h3>Kasus 3: Transfer Beban & Proporsional Tekanan</h3>
+            <p style="font-size:13px;">Saat pengereman mendadak, beban roda belakang berkurang drastis. Mengapa proportioning valve wajib dipasang pada jalur rem tromol belakang?</p>
+            <button class="secondary" style="font-size:12px; padding:6px 12px;" onclick="alert('Pembahasan: Proporsional valve berfungsi mengurangi tekanan hidrolik ke rem belakang demi mencegah terjadinya penguncian roda belakang (lock-up) yang menyebabkan kendaraan berputar.')">Lihat Pembahasan Lengkap</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- 8. Contoh Soal TKA -->
+      <section class="screen" id="s7">
+        <div class="panel" style="padding-bottom:12px;">
+          <div class="eyebrow">08 · Tes Kemampuan Akademik</div>
+          <h2>Contoh Soal (2 LOTS & 3 HOTS) dengan Umpan Balik</h2>
+          <div class="quiz-container-box" id="quizContainer"></div>
+          <div class="controls" style="margin-top:8px;">
+            <button id="gradeTka">Periksa Jawaban TKA</button>
+            <button id="resetTka" class="secondary">Ulangi Kuis</button>
+          </div>
+          <div id="tkaResult" class="status" style="margin-top:8px; padding:8px 12px;">Selesaikan soal dan periksa jawaban untuk melihat skor & umpan balik.</div>
+        </div>
+      </section>
+
+      <!-- 9. Checklist & Refleksi -->
+      <section class="screen" id="s8">
+        <div class="panel">
+          <div class="eyebrow">09 · Refleksi & Ceklis</div>
+          <h2>Checklist Materi yang Dikuasai & Catatan Refleksi</h2>
+          <div class="grid2" style="margin-top:8px;">
+            <div>
+              <h3>Checklist Kompetensi</h3>
+              <label class="checkline"><input type="checkbox" class="chk-item"> Memahami prinsip kerja hidrolik Hukum Pascal pada rem.</label>
+              <label class="checkline"><input type="checkbox" class="chk-item"> Membedakan konstruksi rem cakram dan rem tromol.</label>
+              <label class="checkline"><input type="checkbox" class="chk-item"> Menguasai perhitungan rasio luas piston dan gaya keluaran.</label>
+              <label class="checkline"><input type="checkbox" class="chk-item"> Menjelaskan pencegahan brake fade dan disipasi panas.</label>
+              <label class="checkline"><input type="checkbox" class="chk-item"> Menjelaskan fungsi sistem pendukung modern seperti ABS.</label>
+              <div id="chkCount" class="status" style="margin-top:8px; padding:6px 10px;">0 dari 5 kompetensi ditandai.</div>
+            </div>
+            <div>
+              <h3>Refleksi Mandiri Pembelajaran</h3>
+              <textarea id="refNote" placeholder="Tuliskan catatan refleksi penguasaan materi di sini..."></textarea>
+              <div class="controls"><button id="saveRef">Simpan Catatan Refleksi</button></div>
+              <div id="refStatus" class="small muted" style="margin-top:4px;"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 10. Profil & Referensi -->
+      <section class="screen" id="s9">
+        <div class="panel">
+          <div class="eyebrow">10 · Profil & Referensi</div>
+          <h2>Referensi Pustaka & Profil Pengembang Modul</h2>
+          <div class="grid2" style="margin-top:10px;">
+            <div class="panel" style="margin-bottom:0; background:#fbfdff;">
+              <h3>Identitas Pengembang</h3>
+              <dl class="metadata" style="margin-top:8px;">
+                <dt>Nama Lengkap</dt>
+                <dd>Mohamad Beni</dd>
+                <dt>Asal Sekolah</dt>
+                <dd>SMK Taruna Karya</dd>
+                <dt>Mata Pelajaran</dt>
+                <dd>Pemeliharaan Sasis Kendaraan Ringan</dd>
+                <dt>Fase / Jenjang</dt>
+                <dd>Fase F (SMK)</dd>
+              </dl>
+            </div>
+            <div class="panel" style="margin-bottom:0; background:#fbfdff;">
+              <h3>Daftar Pustaka Acuan</h3>
+              <p style="font-size:13px; margin-bottom:6px;"><strong>1. Toyota Astra Motor:</strong> <em>Step 2 Chasis Group Training Manual</em>, Jakarta.</p>
+              <p style="font-size:13px; margin-bottom:6px;"><strong>2. Kemendikbudristek:</strong> <em>Panduan Pembelajaran Kurikulum Merdeka</em>.</p>
+              <p style="font-size:13px;"><strong>3. Heisler, H.:</strong> <em>Advanced Vehicle Technology</em>, Butterworth-Heinemann.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <div class="bottomnav">
+      <button class="ghost" id="homeBtn">⌂ Beranda</button>
+      <div class="right">
+        <button class="secondary" id="backBtn">← Kembali</button>
+        <button id="nextBtn">Berikutnya →</button>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+(() => {
+  'use strict';
+  const totalScreens = 10;
+  let current = 0;
+  const screens = [...document.querySelectorAll('.screen')];
+  const navButtons = [...document.querySelectorAll('[data-go]')];
+  const progressText = document.getElementById('progressText');
+  const progressBar = document.getElementById('progressBar');
+
+  function goToScreen(n) {
+    current = Math.max(0, Math.min(totalScreens - 1, n));
+    screens.forEach((s, i) => s.classList.toggle('active', i === current));
+    navButtons.forEach(b => b.classList.toggle('active', Number(b.dataset.go) === current));
+    progressText.textContent = `Halaman ${current + 1} dari ${totalScreens}`;
+    progressBar.style.width = ((current + 1) / totalScreens * 100) + '%';
+    document.getElementById('backBtn').disabled = current === 0;
+    document.getElementById('nextBtn').disabled = current === totalScreens - 1;
+  }
+
+  navButtons.forEach(b => b.addEventListener('click', () => goToScreen(Number(b.dataset.go))));
+  document.querySelectorAll('[data-next]').forEach(b => b.addEventListener('click', () => goToScreen(current + 1)));
+  document.getElementById('homeBtn').addEventListener('click', () => goToScreen(0));
+  document.getElementById('backBtn').addEventListener('click', () => goToScreen(current - 1));
+  document.getElementById('nextBtn').addEventListener('click', () => goToScreen(current + 1));
+
+  document.getElementById('fullscreenBtn').addEventListener('click', async () => {
+    try {
+      if (!document.fullscreenElement) {
+        await document.documentElement.requestFullscreen();
+      } else {
+        await document.exitFullscreen();
+      }
+    } catch (e) {
+      alert('Mode layar penuh dibatasi oleh browser.');
+    }
+  });
+
+  // Simulasi Grafik Script
+  const rangeF1 = document.getElementById('rangeF1');
+  const rangeRatio = document.getElementById('rangeRatio');
+  const rangeV = document.getElementById('rangeV');
+  const valF1 = document.getElementById('valF1');
+  const valRatio = document.getElementById('valRatio');
+  const valV = document.getElementById('valV');
+  const resP = document.getElementById('resP');
+  const resF2 = document.getElementById('resF2');
+  const resAccel = document.getElementById('resAccel');
+  const resDist = document.getElementById('resDist');
+
+  function updateSimulation() {
+    const f1 = parseFloat(rangeF1.value);
+    const ratio = parseFloat(rangeRatio.value);
+    const vKm = parseFloat(rangeV.value);
+    valF1.textContent = f1;
+    valRatio.textContent = ratio.toFixed(1);
+    valV.textContent = vKm;
+
+    const pressure = (f1 / 0.0005) / 1000; // kPa
+    const f2 = f1 * ratio;
+    const accel = (f2 * 0.02) / 12; // m/s^2
+    const vMs = vKm / 3.6;
+    const dist = (vMs * vMs) / (2 * Math.max(accel, 1));
+
+    resP.textContent = pressure.toFixed(1) + ' kPa';
+    resF2.textContent = f2.toFixed(0) + ' N';
+    resAccel.textContent = accel.toFixed(2) + ' m/s²';
+    resDist.textContent = dist.toFixed(1) + ' meter';
+  }
+
+  [rangeF1, rangeRatio, rangeV].forEach(el => el.addEventListener('input', updateSimulation));
+  document.getElementById('runSimBtn').addEventListener('click', updateSimulation);
+  document.getElementById('resetSimBtn').addEventListener('click', () => {
+    rangeF1.value = 150; rangeRatio.value = 4.0; rangeV.value = 60;
+    updateSimulation();
+  });
+  updateSimulation();
+
+  // Tabs for Integrasi
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById(btn.dataset.tab).classList.add('active');
+    });
+  });
+
+  // TKA Quiz Data (2 LOTS, 3 HOTS)
+  const tkaQuestions = [
+    {
+      type: 'LOTS',
+      q: '1. Komponen utama pada sistem rem hidrolik yang mengubah gaya mekanis pedal menjadi tekanan fluida adalah...',
+      options: ['Brake booster', 'Master silinder', 'Kaliper rem', 'Proportioning valve'],
+      answer: 1,
+      expl: 'Master silinder adalah komponen utama yang menekan minyak rem.'
+    },
+    {
+      type: 'LOTS',
+      q: '2. Jenis minyak rem dengan standar titik didih terendah di antara pilihan berikut adalah...',
+      options: ['DOT 3', 'DOT 4', 'DOT 5.1', 'Silikon DOT 5'],
+      answer: 0,
+      expl: 'DOT 3 memiliki standar titik didih terendah dibandingkan DOT 4 dan DOT 5.1.'
+    },
+    {
+      type: 'HOTS',
+      q: '3. Apa penyebab utama gejala "brake fade" saat kendaraan melewati turunan panjang?',
+      options: ['Minyak rem membeku karena suhu pegunungan', 'Kampas dan piringan rem mengalami panas berlebih sehingga koefisien gesek menurun', 'Tekanan pegas master silinder terlalu kuat', 'Luas piston kaliper terlalu besar'],
+      answer: 1,
+      expl: 'Brake fade terjadi akibat panas berlebih (thermal overload) yang menurunkan koefisien gesek kampas rem.'
+    },
+    {
+      type: 'HOTS',
+      q: '4. Mengapa kendaraan dengan ABS tetap dapat dikemudikan saat pengereman mendadak di jalan licin?',
+      options: ['ABS memutus total aliran minyak rem', 'ABS mencegah roda terkunci sehingga ban mempertahankan traksi lateral untuk membelok', 'ABS menambah berat kendaraan', 'ABS mengubah energi kinetik jadi listrik'],
+      answer: 1,
+      expl: 'Kontrol pulsa ABS mencegah roda terkunci, menjaga traksi lateral agar kemudi tetap berfungsi.'
+    },
+    {
+      type: 'HOTS',
+      q: '5. Rasio luas piston master terhadap kaliper adalah 1 : 5. Jika gaya pedal 200 N, berapakah gaya jepit efektif pada kaliper?',
+      options: ['40 N', '250 N', '1.000 N', '10.000 N'],
+      answer: 2,
+      expl: 'F2 = F1 * (A2 / A1) = 200 N * 5 = 1000 N.'
+    }
+  ];
+
+  const quizContainer = document.getElementById('quizContainer');
+  function renderTka() {
+    quizContainer.innerHTML = '';
+    tkaQuestions.forEach((item, idx) => {
+      const qDiv = document.createElement('fieldset');
+      qDiv.className = 'quiz-question';
+      const legend = document.createElement('legend');
+      legend.innerHTML = `<span class="qnum">SOAL ${idx + 1} · ${item.type}</span> ${item.q}`;
+      qDiv.appendChild(legend);
+
+      item.options.forEach((opt, oIdx) => {
+        const lbl = document.createElement('label');
+        lbl.className = 'choice';
+        const inp = document.createElement('input');
+        inp.type = 'radio';
+        inp.name = 'tka_' + idx;
+        inp.value = oIdx;
+        const sp = document.createElement('span');
+        sp.textContent = opt;
+        lbl.append(inp, sp);
+        qDiv.appendChild(lbl);
+      });
+
+      const fb = document.createElement('div');
+      fb.className = 'feedback';
+      fb.id = 'tka_fb_' + idx;
+      fb.textContent = 'Pilih salah satu jawaban.';
+      qDiv.appendChild(fb);
+      quizContainer.appendChild(qDiv);
+    });
+  }
+  renderTka();
+
+  document.getElementById('gradeTka').addEventListener('click', () => {
+    let score = 0;
+    let answered = 0;
+    tkaQuestions.forEach((item, idx) => {
+      const sel = quizContainer.querySelector(`input[name="tka_${idx}"]:checked`);
+      const fb = document.getElementById('tka_fb_' + idx);
+      if (sel) {
+        answered++;
+        const val = Number(sel.value);
+        if (val === item.answer) {
+          score++;
+          fb.textContent = 'Benar! ' + item.expl;
+          fb.style.color = '#147d54';
+        } else {
+          fb.textContent = 'Belum tepat. ' + item.expl;
+          fb.style.color = '#8e2028';
+        }
+      } else {
+        fb.textContent = 'Belum dijawab. ' + item.expl;
+        fb.style.color = '#946200';
+      }
+    });
+    const res = document.getElementById('tkaResult');
+    res.className = score >= 4 ? 'status good' : 'status';
+    res.innerHTML = `<strong>Skor Anda: ${score} dari 5 (${answered} dijawab)</strong>. ${score >= 4 ? 'Luar biasa! Pemahaman Anda sangat baik.' : 'Tingkatkan lagi pemahaman dengan membaca materi dasar.'}`;
+  });
+
+  document.getElementById('resetTka').addEventListener('click', renderTka);
+
+  // Checklist & Refleksi Storage
+  const chkItems = document.querySelectorAll('.chk-item');
+  const chkCount = document.getElementById('chkCount');
+  chkItems.forEach(ch => {
+    ch.addEventListener('change', () => {
+      const checkedCount = [...chkItems].filter(i => i.checked).length;
+      chkCount.textContent = `${checkedCount} dari 5 kompetensi ditandai.`;
+    });
+  });
+
+  const refNote = document.getElementById('refNote');
+  const refStatus = document.getElementById('refStatus');
+  refNote.value = localStorage.getItem('remsys_ref') || '';
+  document.getElementById('saveRef').addEventListener('click', () => {
+    try {
+      localStorage.setItem('remsys_ref', refNote.value);
+      refStatus.textContent = 'Refleksi berhasil disimpan.';
+    } catch (e) {
+      refStatus.textContent = 'Gagal menyimpan.';
+    }
+  });
+
+  goToScreen(0);
+})();
+</script>
+</body>
+</html>
